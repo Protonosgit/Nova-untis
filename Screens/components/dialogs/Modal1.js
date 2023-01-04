@@ -1,30 +1,14 @@
-import { View, Text, StyleSheet, TouchableHighlight, Modal, Dimensions, Button } from 'react-native';
+import { View, Text, StyleSheet, Modal, Dimensions, Button } from 'react-native';
 import React, { useState } from 'react';
-import { StatusBar } from 'expo-status-bar';
 
-const ModalPopup = ({visible,children}) => {
+const ModalPopup = ({props}) => {
 
-    React.useEffect(() => {
-        toggleModal();
-    },[visible]);
-
-    const toggleModal=() => {
-        if (visible) {
-            setVisibility(true);
-        } else {
-            setVisibility(false);
-        }
-    }
-    const [modalVisible,setVisibility] = useState(visible);
     return(
-    <Modal transparent visible={modalVisible}>
         <View style={styles.background}>
         <View style={styles.frame}>
             <Text>Test</Text>
-            <Button onPress={() => {setVisibility(false)}} title='test'/>
         </View>
-        </View>
-    </Modal>);
+        </View>);
 };
 
 

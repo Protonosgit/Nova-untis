@@ -2,6 +2,8 @@ import { StatusBar } from 'expo-status-bar';
 import * as SecureStore from 'expo-secure-store';
 import { Button, StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Changes } from './components/ChangeList';
+import { Notifications } from './components/NotificationList';
 
 
 export default function HomeScreen( {navigation} ) {
@@ -35,17 +37,17 @@ export default function HomeScreen( {navigation} ) {
 
       <View style={styles.body}>
         
-      <View style={styles.panel}>
-        <Text style={styles.head3}>Changes</Text>
+      <View style={styles.eventpanel}>
+        <Text style={styles.head3}>Timetable events</Text>
         <View style={styles.lister}>
-          <Text>Items</Text>
+          <Changes/>
         </View>
       </View>
 
-      <View style={styles.panel}>
+      <View style={styles.notipanel}>
         <Text style={styles.head3}>Notifications</Text>
         <View style={styles.lister}>
-          <Text>Items</Text>
+          <Notifications/>
         </View>
       </View>
 
@@ -91,11 +93,19 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     alignItems: 'center',
   },
-  panel:{
+  eventpanel:{
+    flex: 2,
     padding: 10,
-    height: 200,
     width: '90%',
-    margin: 50,
+    margin: '5%',
+    borderRadius: 20,
+    backgroundColor: 'lightgray'
+  },
+    notipanel:{
+    flex: 1,
+    padding: 10,
+    width: '90%',
+    margin: '5%',
     borderRadius: 20,
     backgroundColor: 'lightgray'
   },
@@ -104,5 +114,5 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignContent: 'center',
     alignItems: 'center',
-  }
+  },
 });

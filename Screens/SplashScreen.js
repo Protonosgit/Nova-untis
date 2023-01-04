@@ -43,5 +43,5 @@ const styles = StyleSheet.create({
   },
 });
 
-
+console.log('Active development do not share!')
 // https://open.spotify.com/playlist/0rwKLZshzJsrFKSGpycScI?si=356a05427192434c   :)
