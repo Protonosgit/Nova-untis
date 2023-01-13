@@ -1,17 +1,28 @@
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { StatusBar } from 'expo-status-bar';
 import * as SecureStore from 'expo-secure-store';
-import { Button, StyleSheet, Text, View, Image, Modal, Switch, ScrollView,TouchableWithoutFeedback } from 'react-native';
+import { Button, StyleSheet, Text, View, Image, Modal, Switch, ScrollView,TouchableWithoutFeedback, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+import { AccountPicker } from './components/dialogs/AccountPicker';
+import * as database from './components/DatabaseHandler';
 
 export default function SettingsScreen( {navigation} ) {
 
   const [unametxt,setunametxt] = useState('User_Name');
   const [switch1,setswitch1] = useState(false);
+  const bottomSheet = useRef(null);
+  const snapPoints = ['20%','48%'];
+
+  function handleBottomSheet() {
+    bottomSheet.current?.present();
+  }
 
   async function logout() {
     await SecureStore.setItemAsync('user', 'false');
+    database.purge()
     navigation.replace('Splash');
   }
 
@@ -24,6 +35,8 @@ export default function SettingsScreen( {navigation} ) {
   getuname();
 
   return (
+    <GestureHandlerRootView style={{flex: 1}}>
+    <BottomSheetModalProvider>
     <SafeAreaView style={styles.container}>
         <View style={styles.headding}>
         <Image style={styles.smallIcon} source={require('./assets/untis.png')}/>
@@ -37,10 +50,12 @@ export default function SettingsScreen( {navigation} ) {
       <View style={[styles.panel, {height:'20%'}]}>
         <View style={styles.inset1}>
           <Image style={{height:60,width:60}} source={require('./assets/placeholder.jpeg')}/>
-          <Text style={[styles.head3, {marginLeft:10,}]}>{unametxt}</Text>
-          <Image style={{height:30,width:30,marginLeft:10,}} source={require('./assets/placeholder.jpeg')}/>
+              <Text style={[styles.head3, {marginLeft:10,}]}>{unametxt}</Text>
+              <TouchableOpacity onPress={handleBottomSheet}>
+              <Image style={{height:30,width:30,marginLeft:10,}} source={require('./assets/placeholder.jpeg')}/>
+              </TouchableOpacity>
         </View>
-        <TouchableWithoutFeedback onPress={()=>{console.log('Add user call')}}>
+        <TouchableWithoutFeedback onPress={()=>{navigation.replace('Login')}}>
         <View style={styles.inset1}>
           <Image style={{height:40,width:40,marginLeft:30,}} source={require('./assets/placeholder.jpeg')}/>
           <Text style={{fontSize:20,marginLeft:10,}}>Add user</Text>
@@ -67,6 +82,9 @@ export default function SettingsScreen( {navigation} ) {
       <StatusBar style="auto" />
       </ScrollView>
     </SafeAreaView>
+    <AccountPicker snapPoints={snapPoints} btsref={bottomSheet}/>
+    </BottomSheetModalProvider>
+    </GestureHandlerRootView>
   );
 }
 
@@ -86,8 +104,9 @@ const styles = StyleSheet.create({
     alignItems:'center',
   },
   smallIcon: {
-    width: 80,
-    height: 80,
+    margin: 8,
+    width: 50,
+    height: 50,
   },
   head1: {
     marginLeft: 10,
@@ -120,5 +139,9 @@ const styles = StyleSheet.create({
     alignContent: 'space-between',
     alignItems: 'center',
 
+  },
+  test: {
+    flex: 1,
+    backgroundColor: 'yellow',
   },
 });

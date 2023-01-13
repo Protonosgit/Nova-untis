@@ -1,25 +1,25 @@
 import { StatusBar } from 'expo-status-bar';
 import * as SecureStore from 'expo-secure-store';
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { Image, StyleSheet, Text, View, Button } from 'react-native';
+
+import * as database from './components/DatabaseHandler';
+
+export default function SplashScreen({ navigation }) {
 
 
-export default function SplashScreen( {navigation} ) {
+  database.PreRun();
 
-  async function getKey() {
-    let result = await SecureStore.getItemAsync('user');
-    if (result) {
-      if (result==='true') {
-        navigation.replace('Home');
-      } else {
+  function checkusers() {
+    database.getUserCount().then((count) => {
+      if (count == 0) {
         navigation.replace('Login');
+      } else {
+        navigation.replace('Home');
       }
-    } else {
-      navigation.replace('Login');
-    }
-    
-  }
+  })}
 
-  setTimeout(getKey,2000);
+
+  setTimeout(checkusers, 2000);
 
   return (
     <View style={styles.container}>
@@ -42,6 +42,3 @@ const styles = StyleSheet.create({
     fontSize: 40,
   },
 });
-
-console.log('Active development do not share!')
-// https://open.spotify.com/playlist/0rwKLZshzJsrFKSGpycScI?si=356a05427192434c   :)
