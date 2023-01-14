@@ -1,5 +1,5 @@
 import { useState,useRef, useEffect, useContext } from 'react';
-import { Button, StyleSheet, Text, View,TextInput, TouchableWithoutFeedback, ActivityIndicator } from 'react-native';
+import { Button, StyleSheet, Text, View,TextInput, TouchableWithoutFeedback, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
@@ -13,7 +13,7 @@ import * as database from './components/DatabaseHandler';
 
 
 export default function LoginScreen( {navigation} ) {
-
+  // Global state mangement
   const {Schoolname,setSchoolname} = useContext(ContextStore);
   const {SchoolInfo,setSchoolInfo} = useContext(ContextStore);
 
@@ -76,7 +76,7 @@ export default function LoginScreen( {navigation} ) {
     }
   }
 
-  // Run on start
+  // (debug)
   useEffect(()=> {
     
   },[]);
@@ -88,13 +88,13 @@ export default function LoginScreen( {navigation} ) {
       if (res.result){
         database.add(SchoolInfo.address,SchoolInfo.displayName,SchoolInfo.loginName,SchoolInfo.schoolId,SchoolInfo.serverUrl,usrname,usrpass);
         save('uname',usrname);
-        save('user','true');
         showToast('success','You have been logged in 👋');
         navigation.replace('Home');
 
       } else{ showToast('error','Login failed 🛑'); }});
   }
-  // Untis api logout call
+  
+  // Untis api logout call (debug)
   async function callout() {
     untisLogout().then((res)=>{
       if (res.result===null){
@@ -103,11 +103,6 @@ export default function LoginScreen( {navigation} ) {
         console.log('Error while logging out');
       }
     })
-  }
-
-  //debug
-  function temptest() {
-    database.getUserCount().then((res)=>{ console.log(res); })
   }
 
 
@@ -122,10 +117,10 @@ export default function LoginScreen( {navigation} ) {
         <View style={styles.inputmask}><TextInput style={styles.userinput} error={uerr} underlineColorAndroid={uerr ? 'red' : 'transparent'} placeholder='Username' onChangeText={(txt)=>{setuerr('');setusrname(txt)}} /></View>
         <Text style={styles.titles}>Password:</Text>
         <View style={styles.inputmask}><TextInput style={styles.userinput} error={perr} underlineColorAndroid={perr ? 'red' : 'transparent'} secureTextEntry={true} placeholder='Password' onChangeText={(txt)=>{setperr('');setusrpass(txt);}} /></View>
-        <Button title='Login' onPress={checkcreds} disabled={showloading} />
+        <TouchableOpacity style={styles.loginbtn} onPress={checkcreds}><Text style={styles.btnlabels}>Login</Text></TouchableOpacity>
         {
           showbackbtn?(
-            <Button title='Cancel' onPress={()=>{navigation.replace('Home')}} />
+            <TouchableOpacity style={styles.cancelbtn} onPress={()=>{navigation.goBack()}} ><Text style={styles.btnlabels}>Cancel</Text></TouchableOpacity>
           ):null
         }
                 {
@@ -134,7 +129,6 @@ export default function LoginScreen( {navigation} ) {
           ):null
         }
       </View>
-      <Button title='Test' onPress={temptest} disabled={showloading} />
       <StatusBar style="auto" />
     </View>
     <SchoolSearch2 onDismiss={()=>{console.log('weg')}} btsref={bottomSheet} />
@@ -178,5 +172,29 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 8,
     marginBottom: 10,
-  }
+  },
+  btnlabels: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: 'white',
+  },
+  cancelbtn: {
+    alignContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'red',
+    padding: 8,
+    borderRadius: 10,
+    marginTop: 10,
+    marginBottom: 10,
+  },
+  loginbtn: {
+    alignContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'green',
+    padding: 8,
+    borderRadius: 10,
+    marginTop: 10,
+    marginBottom: 10,
+  },
+
 });

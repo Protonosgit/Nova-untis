@@ -1,12 +1,30 @@
-import { View, Text, Dimensions, StyleSheet, Image, Button, ScrollView } from 'react-native';
-import React, { useState } from 'react';
+import { View, Text, Dimensions, StyleSheet, Image, Button } from 'react-native';
+import React, { useState, useEffect, useContext } from 'react';
 import { BottomSheetModal, BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import * as database from '../DatabaseHandler';
+import { ContextStore } from '../ContextStore';
+import * as SecureStore from 'expo-secure-store';
 
 const AccountPicker = ({btsref}) => {
 
     const snapPoints = ['45%'];
-    const accounts = ['John','Timi','Guntuhdfgzsvfgsdvfhgsdvfsvffwfwer','Jeffrey Dahmer','frida','Mark','lesley','Will'];
+    const [accountlist, setAccountList] = useState([]);
+    const {ActiveUser,setActiveUser} = useContext(ContextStore);
+
+    // key value sys
+    function setKey(key, value) {
+        return SecureStore.setItemAsync(key, value)
+          .catch((error) => {
+            console.error(`Error saving item with key: ${key}`, error);
+          });
+      }
+
+      useEffect(() => {
+        database.getUserAccounts().then(res => {
+            setAccountList(res.rows._array);
+        });
+    }, [])
 
     
     return(
@@ -14,11 +32,16 @@ const AccountPicker = ({btsref}) => {
         <View style={styles.frame}>
         <Text style={styles.title}>Pick an account to use</Text>
             <BottomSheetScrollView style={styles.accounts}>
-            {accounts.map(item=>(<View style={styles.pickaccount}>
-                <Text style={styles.accountTitle} >{item}</Text>
-                <TouchableOpacity><Image style={{height:30,width:30,marginLeft:10}} source={require('../../assets/placeholder.jpeg')}/></TouchableOpacity>
-                </View>))}
+            {accountlist.map(item=>(
+                <View key={item.id}>
+                <TouchableOpacity style={styles.pickaccount} onPress={()=>{setKey('ActiveUser',item.id.toString()).then(()=>{setActiveUser(item.id)})}}>
+                    <Text style={styles.accountTitle} >{item.username}</Text>
+                    {item.id==ActiveUser?(<Image style={{height:20,width:20,marginLeft:10}} source={require('../../assets/placeholder.jpeg')}/>):null}
+                </TouchableOpacity>
+                </View>
+                ))}
             </BottomSheetScrollView>
+
         </View>
      </BottomSheetModal>
         );
@@ -41,8 +64,8 @@ const styles = StyleSheet.create({
     },
     pickaccount: {
         backgroundColor: 'gray',
-        padding: 6,
-        margin: 10,
+        padding: 16,
+        margin: 8,
         borderRadius: 6,
         flexDirection: 'row',
         alignContent: 'space-between',

@@ -1,6 +1,13 @@
 //Login
 import React, { useEffect } from "react";
-import * as SQLite from 'expo-sqlite'
+import * as SQLite from 'expo-sqlite';
+import * as SecureStore from 'expo-secure-store';
+
+
+  // key value sys
+  async function save(key, value) {
+    await SecureStore.setItemAsync(key, value);
+  }
 
 const db = SQLite.openDatabase('useraccounts.db');
 
@@ -27,7 +34,7 @@ function add(address, displayName, loginName, schoolId, serverUrl, username, pas
                         tx.executeSql(
                             'update schools set address= ?, displayName = ?, loginName = ?, schoolId = ?, serverUrl = ?, username = ?, password = ? where id = ?',
                            [address,displayName,loginName,schoolId,serverUrl,username,password, result.rows._array[0].id],
-                            (_, result) => console.log(result),
+                            (_, result) => save('ActiveUser',result.insertId),
                             (_, error) => console.warn(error)
                         );
                     });
@@ -38,7 +45,7 @@ function add(address, displayName, loginName, schoolId, serverUrl, username, pas
                         tx.executeSql(
                             'insert into schools (address, displayName, loginName, schoolId, serverUrl, username, password) values (?, ?, ?, ?, ?, ?, ?);',
                             [address,displayName,loginName,schoolId,serverUrl,username,password],
-                            (_, result) => console.log(result),
+                            (_, result) => save('ActiveUser',result.insertId),
                             (_, error) => console.warn(error)
                         );
                     });
@@ -50,28 +57,25 @@ function add(address, displayName, loginName, schoolId, serverUrl, username, pas
 }
 
 // Check if login required
-function getUserCount() {
+function getUserAccounts() {
     return new Promise((resolve, reject) => {
         db.transaction((tx) => {
           tx.executeSql('SELECT * FROM schools', [], (tx, results) => {
-            resolve(results.rows._array.length);
+            resolve(results);
           });
         });
       });
 }
 
-// read (debug)
-function read() {
-    db.transaction(tx => {
-        tx.executeSql(
-            'select * from schools',
-            [],
-            (_, result) => {
-                console.log(result.rows._array);
-            },
-            (_, error) => console.warn(error)
-        );
-    });
+// get specific acccount
+function getAccountInfo(userid) {
+    return new Promise((resolve, reject) => {
+        db.transaction((tx) => {
+          tx.executeSql('SELECT * FROM schools where id = ?', [userid], (tx, results) => {
+            resolve(results.rows._array[0]);
+          });
+        });
+      });
 }
 // reset (debug)
 function purge() {
@@ -85,4 +89,4 @@ function purge() {
     });
 }
 
-export { PreRun,read, purge, add, getUserCount };
+export { PreRun, getAccountInfo, purge, add, getUserAccounts };

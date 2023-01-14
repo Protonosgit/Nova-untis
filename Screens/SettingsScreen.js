@@ -3,16 +3,18 @@ import { StatusBar } from 'expo-status-bar';
 import * as SecureStore from 'expo-secure-store';
 import { Button, StyleSheet, Text, View, Image, Modal, Switch, ScrollView,TouchableWithoutFeedback, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useContext } from 'react';
 
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { AccountPicker } from './components/dialogs/AccountPicker';
 import * as database from './components/DatabaseHandler';
+import { ContextStore } from './components/ContextStore';
 
 export default function SettingsScreen( {navigation} ) {
 
   const [unametxt,setunametxt] = useState('User_Name');
   const [switch1,setswitch1] = useState(false);
+  const {ActiveUser,setActiveUser} = useContext(ContextStore);
   const bottomSheet = useRef(null);
   const snapPoints = ['20%','48%'];
 
@@ -20,19 +22,11 @@ export default function SettingsScreen( {navigation} ) {
     bottomSheet.current?.present();
   }
 
-  async function logout() {
-    await SecureStore.setItemAsync('user', 'false');
-    database.purge()
-    navigation.replace('Splash');
-  }
-
-  async function getuname() {
-    let result = await SecureStore.getItemAsync('uname');
-    if (result) {
-      setunametxt(result);
-    }
-  }
-  getuname();
+  useEffect(()=> {
+    database.getAccountInfo(ActiveUser).then(res => {
+      setunametxt(res.username);
+    });
+  },[ActiveUser]);
 
   return (
     <GestureHandlerRootView style={{flex: 1}}>
@@ -44,8 +38,6 @@ export default function SettingsScreen( {navigation} ) {
         </View>
         <ScrollView>
       <View style={styles.body}>
-
-      <Button title='Logout' onPress={logout}/>
         
       <View style={[styles.panel, {height:'20%'}]}>
         <View style={styles.inset1}>
@@ -76,11 +68,10 @@ export default function SettingsScreen( {navigation} ) {
         <Switch value={switch1} onValueChange={() => {setswitch1(!switch1)}}/>
         <Switch value={switch1} onValueChange={() => {setswitch1(!switch1)}}/>
       </View>
-
       </View>
+      </ScrollView>
       
       <StatusBar style="auto" />
-      </ScrollView>
     </SafeAreaView>
     <AccountPicker snapPoints={snapPoints} btsref={bottomSheet}/>
     </BottomSheetModalProvider>
