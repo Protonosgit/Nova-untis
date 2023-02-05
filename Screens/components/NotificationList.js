@@ -19,6 +19,7 @@ const Notifications = ({props}) => {
 };
 
 
+
 const styles = StyleSheet.create({
     frame: {
         paddingLeft: 12, paddingRight: 12,

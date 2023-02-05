@@ -29,7 +29,7 @@ export default function SplashScreen({ navigation }) {
   useEffect(() => {
     database.PreRun();
     getKey('ActiveUser').then((value) => {setActiveUser(value)});
-    setTimeout(checkusers, 2000);
+    setTimeout(checkusers, 2200);
   }, [])
 
 
@@ -38,7 +38,8 @@ export default function SplashScreen({ navigation }) {
   return (
     <View style={styles.container}>
       <Image source={require('./assets/untis.png')} />
-      <Text style={styles.headding}>Nova Untis</Text>
+      <Text style={styles.headding}>Project-Nova-Untis</Text>
+      <Text style={{fontSize:20}}>[Active development ALPHA 0.0.1]</Text>
       <StatusBar hidden />
     </View>
   );

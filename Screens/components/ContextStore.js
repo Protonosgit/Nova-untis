@@ -4,6 +4,7 @@ const ContextStore = React.createContext();
 
 const StoreProvider = ({children}) => {
     const [Schoolname,setSchoolname] = React.useState('Select your school');
+    const [UntisSession,setUntisSession] = React.useState(null);
     const [ActiveUser,setActiveUser] = React.useState(1);
     const [SchoolInfo,setSchoolInfo] = React.useState([]);
 
@@ -12,6 +13,7 @@ const StoreProvider = ({children}) => {
             Schoolname,setSchoolname,
             SchoolInfo, setSchoolInfo,
             ActiveUser,setActiveUser,
+            UntisSession,setUntisSession,
 
             }}>
             {children}

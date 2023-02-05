@@ -4,9 +4,14 @@ import { Button, StyleSheet, Text, View, Image, TouchableOpacity } from 'react-n
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Changes } from './components/ChangeList';
 import { Notifications } from './components/NotificationList';
+import { useState, useEffect } from 'react';
+import moment from 'moment'; 
 
 
 export default function HomeScreen( {navigation} ) {
+
+  const [Time,setTime] = useState('Today is Friday 13th');
+  const [Greeting,setGreeting] = useState('Good day sir ')
 
   async function save() {
     await SecureStore.setItemAsync('user','false');
@@ -20,6 +25,24 @@ export default function HomeScreen( {navigation} ) {
     }
   }
 
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setTime('Today is '+moment().format('dddd DD MMMM YYYY'));
+      const hour = parseInt(moment().format('HH'));
+      if (hour>=18){
+        setGreeting('Good evening!')
+      }else if (hour>=15){
+        setGreeting('Good afternoon!')
+      }else if (hour>=12){
+        setGreeting('Good midday!')
+      }else if (hour>=0){
+        setGreeting('Good morning!')
+      }
+    }, 1000);
+
+    return () => clearInterval(intervalId);
+  }, []);
+
   function gotoSettings() {
     navigation.navigate('Settings');
   }
@@ -28,10 +51,10 @@ export default function HomeScreen( {navigation} ) {
     <SafeAreaView style={styles.container}>
       <View style={styles.top}>
         <View style={styles.headding}>
-          <Text style={styles.head1}>Good morning Kay Julius Donatus</Text>
+          <Text style={styles.head1}>{Greeting}</Text>
           <Image style={styles.smallIcon} source={require('./assets/placeholder.jpeg')}/>
         </View>
-        <Text style={styles.head2}>Today is Friday 13. of december</Text>
+        <Text style={styles.head2}>{Time}</Text>
         <TouchableOpacity onPress={gotoSettings}><Image style={styles.smallIcon} source={require('./assets/placeholder.jpeg')}/></TouchableOpacity>
       </View>
 

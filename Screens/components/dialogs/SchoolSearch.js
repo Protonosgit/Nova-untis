@@ -14,7 +14,6 @@ const SchoolSearch2 = ({btsref}) => {
     const {Schoolname,setSchoolname} = useContext(ContextStore);
     const {SchoolInfo,setSchoolInfo} = useContext(ContextStore);
 
-
     async function searchterm(term) {
         untisSchoolQuery(term).then((res)=>{
           if (res.result){
@@ -34,7 +33,7 @@ const SchoolSearch2 = ({btsref}) => {
         setSchoolInfo(picked);
         setSchoolname(picked.loginName);
         Keyboard.dismiss();
-        btsref.current.close();
+        setTimeout((()=>{btsref.current.close();}),300)
       }
 
     
@@ -43,8 +42,8 @@ const SchoolSearch2 = ({btsref}) => {
         <View style={styles.frame}>
         <Text style={styles.title}>Search for your school</Text>
         <View style={styles.searchbar}>
-            <TextInput onChangeText={(text)=>{ if (text.length>2) {searchterm(text)}}} style={{width: '90%'}} placeholder='Schoolname'/>
             <Image source={require('../../assets/placeholder.jpeg')} style={{width: 20, height: 20, marginLeft: 10}}/>
+            <TextInput style={{marginLeft: 15, width:'90%'}} onChangeText={(text)=>{ if (text.length>2) {if(text.length>40){setsearchres('Too much input')}else{searchterm(text)}}}} placeholder='Schoolname'/>
         </View>
         <Text style={styles.searchres}>{searchres}</Text>
             <BottomSheetScrollView>
@@ -79,10 +78,8 @@ const styles = StyleSheet.create({
     },
     searchbar: {
         display : 'flex',
-        justifyContent: 'space-between',
-        flexDirection:'row',
+        flexDirection: 'row',
         alignItems:'center',
-        flexWrap: 'wrap',
         backgroundColor: 'gray',
         padding: 8,
         borderRadius: 30,

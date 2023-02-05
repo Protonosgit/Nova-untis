@@ -18,7 +18,20 @@ const AccountPicker = ({btsref}) => {
           .catch((error) => {
             console.error(`Error saving item with key: ${key}`, error);
           });
-      }
+    }
+    function getKey(key) {
+        return SecureStore.getItemAsync(key)
+          .then((value) => {})
+    }
+    // change active account
+    function changeuser(item) {
+        setKey('ActiveUser',item.id.toString()).then(()=>{setActiveUser(item.id)});
+        database.getAccountInfo(item.id).then(res => {
+            setKey('ActiveUname',res.username);
+            setKey('ActivePass',res.password);
+            btsref.current.close();
+        })
+    }
 
       useEffect(() => {
         database.getUserAccounts().then(res => {
@@ -34,7 +47,7 @@ const AccountPicker = ({btsref}) => {
             <BottomSheetScrollView style={styles.accounts}>
             {accountlist.map(item=>(
                 <View key={item.id}>
-                <TouchableOpacity style={styles.pickaccount} onPress={()=>{setKey('ActiveUser',item.id.toString()).then(()=>{setActiveUser(item.id)})}}>
+                <TouchableOpacity style={styles.pickaccount} onPress={()=>{changeuser(item)}}>
                     <Text style={styles.accountTitle} >{item.username}</Text>
                     {item.id==ActiveUser?(<Image style={{height:20,width:20,marginLeft:10}} source={require('../../assets/placeholder.jpeg')}/>):null}
                 </TouchableOpacity>

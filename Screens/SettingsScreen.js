@@ -4,34 +4,89 @@ import * as SecureStore from 'expo-secure-store';
 import { Button, StyleSheet, Text, View, Image, Modal, Switch, ScrollView,TouchableWithoutFeedback, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useEffect, useRef, useState, useContext } from 'react';
+import NetInfo from '@react-native-community/netinfo';
+import Toast from 'react-native-toast-message';
 
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { AccountPicker } from './components/dialogs/AccountPicker';
 import * as database from './components/DatabaseHandler';
 import { ContextStore } from './components/ContextStore';
+import * as untis from './components/UntisApi';
 
 export default function SettingsScreen( {navigation} ) {
 
   const [unametxt,setunametxt] = useState('User_Name');
   const [switch1,setswitch1] = useState(false);
+  const [isConnected, setIsConnected] = useState(false);
   const {ActiveUser,setActiveUser} = useContext(ContextStore);
+  const {UntisSession,setUntisSession} = useContext(ContextStore);
   const bottomSheet = useRef(null);
   const snapPoints = ['20%','48%'];
 
   function handleBottomSheet() {
     bottomSheet.current?.present();
   }
-
   useEffect(()=> {
     database.getAccountInfo(ActiveUser).then(res => {
       setunametxt(res.username);
     });
   },[ActiveUser]);
+  useEffect(()=> {
+    loginapi();
+  },[])
+
+  // key value sys
+  function setKey(key, value) {
+    return SecureStore.setItemAsync(key, value)
+      .catch((error) => {
+        console.error(`Error saving item with key: ${key}`, error);
+      });
+  }
+  async function getKey(key) {
+    return SecureStore.getItemAsync(key)
+  }
+  // prepare toasts
+  const showToast = (ToastType,ToastMessage) => {
+    Toast.show({
+      type: ToastType,
+      text1: ToastMessage,
+    });
+  }
+  //check internet connection (broken)
+  useEffect(()=>{NetInfo.addEventListener(state => {setIsConnected(state.isConnected)})},[]);
+
+// login untis
+  async function loginapi() {
+    if (true) {
+      const uname = await getKey('ActiveUname');
+      const upw = await getKey('ActivePass');
+      untis.login(uname,upw).then(res => {
+        const sess = res.result;
+        setKey('UntisUser',JSON.stringify(res.result));
+        setUntisSession(res.result);
+        database.resetConfig().then(()=>{untis.initConfigChain(sess)});
+        
+      });
+    } else {showToast('error','No Internet Connection')}
+  }
+
+
+  function killdata() {
+    database.purge();
+    setTimeout(() =>{
+      navigation.reset({
+        index: 0,
+        routes: [{name: 'Splash'}],
+      });
+    },1000);
+    showToast('info','Deleting data ♻️');
+  }
 
   return (
     <GestureHandlerRootView style={{flex: 1}}>
     <BottomSheetModalProvider>
     <SafeAreaView style={styles.container}>
+      <Button title='Test read rows' onPress={()=>{database.testread().then((res)=>{console.log(res.rows._array)})}}/>
         <View style={styles.headding}>
         <Image style={styles.smallIcon} source={require('./assets/untis.png')}/>
           <Text style={styles.head1}>Nova Untis</Text>
@@ -67,6 +122,7 @@ export default function SettingsScreen( {navigation} ) {
         <Switch value={switch1} onValueChange={() => {setswitch1(!switch1)}}/>
         <Switch value={switch1} onValueChange={() => {setswitch1(!switch1)}}/>
         <Switch value={switch1} onValueChange={() => {setswitch1(!switch1)}}/>
+        <Button onPress={killdata} title='Delete all data'/>
       </View>
       </View>
       </ScrollView>
