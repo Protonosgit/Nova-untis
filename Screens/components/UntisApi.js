@@ -2,6 +2,7 @@
 import React, { useEffect } from "react";
 import * as database from "./DatabaseHandler"
 import * as SecureStore from 'expo-secure-store';
+import moment from 'moment'; 
 
   // key value sys
   function setKey(key, value) {
@@ -208,13 +209,14 @@ async function lastupdate() {
 }
 // Fetch timetable data from untis
 async function timetable() {
+    const timestamp = parseInt(moment().format('YYYYMMDD'));
     const host = await servHost(0);
     const requestOptions = {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({"id": "req0","jsonrpc": "2.0","method": "getTimetable","client": "NovaUntis","params": {  "options": {"element": {"id": getSession.personId,"type": getSession.personType},"startDate": 20230130,"endDate": 20230205,"showBooking": true,"showInfo": true,"showSubstText": true,"showLsText": true,"showLsNumber": true,"showStudentgroup": true}}})
+        body: JSON.stringify({"id": "req0","jsonrpc": "2.0","method": "getTimetable","client": "NovaUntis","params": {  "options": {"element": {"id": getSession.personId,"type": getSession.personType},"startDate": timestamp,"endDate": timestamp,"showBooking": true,"showInfo": true,"showSubstText": true,"showLsText": true,"showLsNumber": true,"showStudentgroup": true}}})
     };
-    fetch(host ,requestOptions).then(res=>res.json().then(res=>res.result).then((res)=>{database.timetable(res)}))
+    fetch(host ,requestOptions).then(res=>res.json().then(res=>res.result).then((res)=>{database.timetable(res).then((res)=>{})}))
 }
 // Fetch all data from untis (not implemented) & (add database filler)
 async function timetableV2() {

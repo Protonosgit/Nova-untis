@@ -27,6 +27,7 @@ export default function LoginScreen( {navigation} ) {
   const [perr,setperr] = useState('');
   const [showbackbtn,setshowbackbtn] = useState(false);
   const [showloading,setshowloading] = useState(false);
+  const [Processdone,setProcessdone] = useState(false);
   const bottomSheet = useRef(null);
 
   // key value sys
@@ -99,6 +100,7 @@ export default function LoginScreen( {navigation} ) {
           database.resetConfig().then(()=>{
             untis.initConfigChain(sess);
             save('uname',usrname)
+            setProcessdone(true);
             showToast('success','You have been logged in 👋');
             setTimeout(()=>{navigation.replace('Home')},1000);
           })
@@ -132,17 +134,12 @@ export default function LoginScreen( {navigation} ) {
         <View style={styles.inputmask}><TextInput style={styles.userinput} error={uerr} underlineColorAndroid={uerr ? 'red' : 'transparent'} placeholder='Username' onChangeText={(txt)=>{setuerr('');setusrname(txt.trim().toLocaleLowerCase())}} /></View>
         <Text style={styles.titles}>Password:</Text>
         <View style={styles.inputmask}><TextInput style={styles.userinput} error={perr} underlineColorAndroid={perr ? 'red' : 'transparent'} secureTextEntry={true} placeholder='Password' onChangeText={(txt)=>{setperr('');setusrpass(txt);}} /></View>
+
+        { showloading?( <ActivityIndicator size={'large'}/> ):null }
+        { !showloading && !Processdone?( <View style={styles.buttons}>
         <TouchableOpacity style={styles.loginbtn} onPress={checkcreds}><Text style={styles.btnlabels}>Login</Text></TouchableOpacity>
-        {
-          showbackbtn?(
-            <TouchableOpacity style={styles.cancelbtn} onPress={()=>{navigation.goBack()}} ><Text style={styles.btnlabels}>Cancel</Text></TouchableOpacity>
-          ):null
-        }
-                {
-          showloading?(
-            <ActivityIndicator size={'large'}/>
-          ):null
-        }
+        { showbackbtn?( <TouchableOpacity style={styles.cancelbtn} onPress={()=>{navigation.goBack()}} ><Text style={styles.btnlabels}>Cancel</Text></TouchableOpacity> ):null }
+        </View> ):null }
       </View>
       <StatusBar style="auto" />
     </View>
@@ -191,23 +188,30 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: 'white',
   },
+  buttons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 8,
+  },
   cancelbtn: {
     alignContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'red',
+    flexGrow: 1,
+    backgroundColor: '#FF6B5B',
     padding: 8,
     borderRadius: 10,
-    marginTop: 10,
-    marginBottom: 10,
+    margin: 8,
   },
   loginbtn: {
     alignContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'green',
+    flexGrow: 1,
+    backgroundColor: '#00A7D8',
     padding: 8,
     borderRadius: 10,
-    marginTop: 10,
-    marginBottom: 10,
+    margin: 8,
   },
 
 });

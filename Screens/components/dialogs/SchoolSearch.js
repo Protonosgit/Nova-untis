@@ -23,7 +23,7 @@ const SchoolSearch2 = ({btsref}) => {
             } else {setsearchres('No schools have been found!'); setschools([]);}
           } else{
             if (res.error.code===-6003) {
-            setsearchres('Too many results');
+            setsearchres('Too many results!');
             setschools([]);
             } else{ setsearchres('error while searching'); setschools([]);}
           }
@@ -45,16 +45,23 @@ const SchoolSearch2 = ({btsref}) => {
             <Image source={require('../../assets/placeholder.jpeg')} style={{width: 20, height: 20, marginLeft: 10}}/>
             <TextInput style={{marginLeft: 15, width:'90%'}} onChangeText={(text)=>{ if (text.length>2) {if(text.length>40){setsearchres('Too much input')}else{searchterm(text)}}}} placeholder='Schoolname'/>
         </View>
-        <Text style={styles.searchres}>{searchres}</Text>
             <BottomSheetScrollView>
+            {
+          searchres?(
+            <View style={styles.searchres}><Text style={{color:'gray',fontSize:20}}>{searchres}</Text></View>
+          ):(
+            <View style={{marginTop:20}}>
             {schools.map(item=>(
             <View key={item.schoolId} style={styles.items}>
                 <TouchableOpacity onPress={()=>{schoolpick(item)}}>
-                <Text style={styles.schoolname} >{item.displayName}</Text>
-                <Text >{item.address}</Text>
+                <Text style={{fontSize:18}} >{item.displayName}</Text>
+                <Text>{item.address}</Text>
                 </TouchableOpacity>
                 </View>
                 ))}
+                </View>
+          )
+        }
             </BottomSheetScrollView>
         </View>
      </BottomSheetModal>
@@ -71,7 +78,7 @@ const styles = StyleSheet.create({
         padding: 8,
     },
     title: {
-        marginBottom: '8%',
+        marginBottom: '4%',
         fontSize: 18,
         textAlign: 'center',
         fontWeight: 'bold',
@@ -85,9 +92,11 @@ const styles = StyleSheet.create({
         borderRadius: 30,
     },
     searchres: {
-        color: 'tomato',
-        fontSize: 16,
-        fontWeight: 'bold',
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: 8,
+      marginTop: 12,
     },
     items: {
         padding: 6,
@@ -95,12 +104,6 @@ const styles = StyleSheet.create({
         backgroundColor: 'gray',
         borderRadius: 4,
     },
-    results: {
-        marginTop: 20,
-    },
-    schoolname: {
-        fontSize: 18,
-    }
 
 })
 

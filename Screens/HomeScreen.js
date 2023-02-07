@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import * as SecureStore from 'expo-secure-store';
-import { Button, StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
+import { Button, StyleSheet, Text, View, Image, TouchableOpacity, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Changes } from './components/ChangeList';
 import { Notifications } from './components/NotificationList';
@@ -46,35 +46,41 @@ export default function HomeScreen( {navigation} ) {
   function gotoSettings() {
     navigation.navigate('Settings');
   }
+  function gotoCalendar() {
+    navigation.navigate('Settings');
+  }
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.top}>
         <View style={styles.headding}>
-          <Text style={styles.head1}>{Greeting}</Text>
+          <Text style={{fontSize:25}}>{Greeting}</Text>
           <Image style={styles.smallIcon} source={require('./assets/placeholder.jpeg')}/>
         </View>
-        <Text style={styles.head2}>{Time}</Text>
+        <Text style={{fontSize:20, marginTop:8}}>{Time}</Text>
+        <View style={styles.menubar}>
         <TouchableOpacity onPress={gotoSettings}><Image style={styles.smallIcon} source={require('./assets/placeholder.jpeg')}/></TouchableOpacity>
+        <TouchableOpacity onPress={gotoCalendar}><Image style={styles.smallIcon} source={require('./assets/placeholder.jpeg')}/></TouchableOpacity>
       </View>
-
+      </View>
+      <ScrollView>
       <View style={styles.body}>
-        
-      <View style={styles.eventpanel}>
-        <Text style={styles.head3}>Timetable events</Text>
-        <View style={styles.lister}>
+      <View style={styles.frame}>
           <Changes/>
-        </View>
       </View>
 
-      <View style={styles.notipanel}>
-        <Text style={styles.head3}>Notifications</Text>
-        <View style={styles.lister}>
+      <View style={styles.frame}>
           <Notifications/>
-        </View>
       </View>
 
+      <View style={styles.frame}>
+        <Text style={{fontSize:20,fontWeight:'bold'}}>Information</Text>
+        <View style={styles.part}><Text style={{fontSize:18}}>Server status:</Text><Text style={{color:'green',fontSize:16,fontWeight:'bold'}}>ONLINE</Text></View>
+        <View style={styles.part}><Text style={{fontSize:18}}>Last update:</Text><Text style={{fontSize:16,fontWeight:'bold'}}>2 hours ago</Text></View>
+        <View style={styles.part}><Text style={{fontSize:18}}>School role:</Text><Text style={{fontSize:16,fontWeight:'bold'}}>Student</Text></View>
       </View>
+      </View>
+      </ScrollView>
       <StatusBar style="auto" />
     </SafeAreaView>
   );
@@ -83,59 +89,49 @@ export default function HomeScreen( {navigation} ) {
 
 const styles = StyleSheet.create({
   container: {
+    backgroundColor: '#fff',
     flex: 1,
   },
   top: {
     width: '100%',
     backgroundColor: 'lightgray',
-    padding: 10,
+    padding: 20,
   },
   headding: {
     justifyContent: 'space-between',
     flexDirection:'row',
     alignItems:'center',
   },
+  menubar: {
+    flexDirection:'row',
+    justifyContent: 'space-between',
+    alignContent: 'center',
+    alignItems: 'center',
+    marginTop: 20,
+  },
   smallIcon: {
-    width: 80,
-    height: 80,
-  },
-  head1: {
-    fontSize: 25,
-  },
-  head2:{
-    fontSize: 20,
-  },
-  head3: {
-    width: '100%',
-    textAlign: 'center',
-    fontSize: 20,
-    fontWeight: 'bold',
+    width: 50,
+    height: 50,
   },
   body: {
     flex: 1,
+    height: '100%',
     backgroundColor: '#fff',
     alignItems: 'center',
   },
-  eventpanel:{
-    flex: 2,
-    padding: 10,
+    frame:{
     width: '90%',
-    margin: '5%',
-    borderRadius: 20,
+    padding: 8,
+    marginTop: 15,
+    borderRadius: 15,
     backgroundColor: 'lightgray'
   },
-    notipanel:{
-    flex: 1,
-    padding: 10,
-    width: '90%',
-    margin: '5%',
-    borderRadius: 20,
-    backgroundColor: 'lightgray'
-  },
-  lister: {
-    flex: 1,
-    justifyContent: 'center',
-    alignContent: 'center',
+  part: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-  },
+    marginTop: 4,
+    padding:4,
+    borderBottomWidth: 2,
+  }
 });
