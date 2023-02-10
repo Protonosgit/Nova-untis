@@ -209,12 +209,12 @@ async function lastupdate() {
 }
 // Fetch timetable data from untis
 async function timetable() {
-    const timestamp = parseInt(moment().format('YYYYMMDD'));
+    const timestamp = moment();
     const host = await servHost(0);
     const requestOptions = {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({"id": "req0","jsonrpc": "2.0","method": "getTimetable","client": "NovaUntis","params": {  "options": {"element": {"id": getSession.personId,"type": getSession.personType},"startDate": timestamp,"endDate": timestamp,"showBooking": true,"showInfo": true,"showSubstText": true,"showLsText": true,"showLsNumber": true,"showStudentgroup": true}}})
+        body: JSON.stringify({"id": "req0","jsonrpc": "2.0","method": "getTimetable","client": "NovaUntis","params": {  "options": {"element": {"id": getSession.personId,"type": getSession.personType},"startDate": parseInt(timestamp.subtract(7,'day').format('YYYYMMDD')),"endDate": parseInt(timestamp.add(7,'day').format('YYYYMMDD')),"showBooking": true,"showInfo": true,"showSubstText": true,"showLsText": true,"showLsNumber": true,"showStudentgroup": true}}})
     };
     fetch(host ,requestOptions).then(res=>res.json().then(res=>res.result).then((res)=>{database.timetable(res).then((res)=>{})}))
 }

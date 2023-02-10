@@ -250,7 +250,7 @@ function Setup() {
         const db3 = SQLite.openDatabase('maindata.db');
         db3.transaction(tx => {
           tx.executeSql(
-            'create table if not exists timetable (id integer, date integer, startTime integer, endTime integer, kl text, su text, ro text, te text, statflags text, lsnumber integer, lstext text, info text, sg text, activityType text, user integer);',
+            'create table if not exists timetable (id integer, date integer, startTime integer, endTime integer, kl text, su text, ro text, te text, statflags text, lsnumber integer, lstext text, info text, sg text, activityType text, code text, substText text, user integer);',
             //(_, result) => {console.log(result)},(_, error) => console.warn(error)
           );
     
@@ -476,11 +476,11 @@ async function timetable(untisdata) {
   return new Promise((resolve, reject) => {
     db3.transaction(async (tx) => {
       untisdata.forEach((item) => {
-        var [id,date,startTime,endTime,activityType,statflags,lsnumber,lstext,info,sg,kl,su,ro,te] = '';
-        var [id,date,startTime,endTime,activityType,statflags,lsnumber,lstext,info,sg,kl,su,ro,te] = [item.id,item.date,item.startTime,item.endTime,item.activityType,item.statflags,item.lsnumber,item.lstext,item.info,item.sg,JSON.stringify(item.kl),JSON.stringify(item.su),JSON.stringify(item.ro),JSON.stringify(item.te)];
+        var [id,date,startTime,endTime,activityType,code,substText,statflags,lsnumber,lstext,info,sg,kl,su,ro,te] = '';
+        var [id,date,startTime,endTime,activityType,code,substText,statflags,lsnumber,lstext,info,sg,kl,su,ro,te] = [item.id,item.date,item.startTime,item.endTime,item.activityType,item.code,item.substText,item.statflags,item.lsnumber,item.lstext,item.info,item.sg,JSON.stringify(item.kl),JSON.stringify(item.su),JSON.stringify(item.ro),JSON.stringify(item.te)];
         tx.executeSql(
-          'INSERT INTO timetable (id, date, startTime, endTime, activityType, statflags, lsnumber, lstext, info, sg, kl, su, ro, te, user) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
-          [id,date,startTime,endTime,activityType,statflags,lsnumber,lstext,info,sg,kl,su,ro,te,user],
+          'INSERT INTO timetable (id, date, startTime, endTime, activityType, code, substText, statflags, lsnumber, lstext, info, sg, kl, su, ro, te, user) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+          [id,date,startTime,endTime,activityType,code,substText,statflags,lsnumber,lstext,info,sg,kl,su,ro,te,user],
           (_, result) => resolve(result),
           (_, error) => reject(error)
         );
@@ -489,17 +489,43 @@ async function timetable(untisdata) {
   });
 }
 
-// (debug)
-async function testread() {
-  //const db2 = SQLite.openDatabase('supportdata.db');
+// read untis data
+async function readData(type) {
+  const user = await getKey('ActiveUser');
   const db3 = SQLite.openDatabase('maindata.db');
   return new Promise((resolve, reject) => {
       db3.transaction((tx) => {
-        tx.executeSql('SELECT * FROM timetable', [], (tx, results) => {
+        tx.executeSql('SELECT * FROM timetable WHERE user = ?', [user], (tx, results) => {
+          resolve(results);
+        });
+      });
+    });
+}
+// read config data
+async function readConfig(type) {
+  const user = await getKey('ActiveUser');
+  const db2 = SQLite.openDatabase('supportdata.db');
+  return new Promise((resolve, reject) => {
+      db2.transaction((tx) => {
+        tx.executeSql(`SELECT * FROM ${type} WHERE user = ?`, [user], (tx, results) => {
           resolve(results);
         });
       });
     });
 }
 
-export { PreRun, getAccountInfo, purge, add, removeAccount, getUserAccounts, Setup, departments, subjects, teachers, rooms, students, holidays, classes, timegrid, statusdata, testread, activeschoolyear, schoolyears, resetConfig, timetable };
+// (debug)
+async function testread() {
+  const user = await getKey('ActiveUser');
+  //const db2 = SQLite.openDatabase('supportdata.db');
+  const db3 = SQLite.openDatabase('maindata.db');
+  return new Promise((resolve, reject) => {
+      db3.transaction((tx) => {
+        tx.executeSql('SELECT * FROM timetable WHERE user = ?', [user], (tx, results) => {
+          resolve(results);
+        });
+      });
+    });
+}
+
+export { PreRun, getAccountInfo, purge, add, removeAccount, getUserAccounts, Setup, departments, subjects, teachers, rooms, students, holidays, classes, timegrid, statusdata, testread, activeschoolyear, schoolyears, resetConfig, timetable, readData, readConfig };
