@@ -1,5 +1,5 @@
 # Nova-untis
 
-## Another Untis client for Android / IOS
+<img src="/assets/icon.png" alt="drawing" width="250"/>
 
-<img src="/assets/icon.png" alt="drawing" width="200"/>
+## Another Untis client for Android / IOS
