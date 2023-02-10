@@ -2,4 +2,4 @@
 
 ## Another Untis client for Android / IOS
 
-![alt text](/assets/icon.png "Title")
+<img src="logo.jpg" alt="drawing" width="200"/>
