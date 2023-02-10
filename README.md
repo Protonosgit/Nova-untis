@@ -2,4 +2,4 @@
 
 ## Another Untis client for Android / IOS
 
-<img src="icon.jpg" alt="drawing" width="200"/>
+<img src="icon.png" alt="drawing" width="200"/>
