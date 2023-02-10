@@ -2,4 +2,4 @@
 
 ## Another Untis client for Android / IOS
 
-![alt text](/assets/untis.png "Title")
+![alt text](/assets/icon.png "Title")
