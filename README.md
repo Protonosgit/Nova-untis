@@ -12,4 +12,4 @@ Once done this project will offer a better user experience for untis users!
 - [ ] Multiple data sources / apis
 - [ ] Active event tracker
 - [ ] Better timetable design
-- [ ] Simple multi user management
+- [X] Simple multi user management
