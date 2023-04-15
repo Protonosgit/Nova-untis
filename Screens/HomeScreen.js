@@ -17,6 +17,7 @@ export default function HomeScreen( {navigation} ) {
   const [Time,setTime] = useState('Today is Friday 13th');
   const [Greeting,setGreeting] = useState('Good day sir ')
   const [refreshing, setRefreshing] = useState(false);
+  const [untisStatus, setUntisStatus] = useState('Checking...');
   const {UntisSession,setUntisSession} = useContext(ContextStore);
 
   // key value sys
@@ -45,7 +46,9 @@ export default function HomeScreen( {navigation} ) {
       }
     }, 1000);
 
-    return () => clearInterval(intervalId);
+    untis.getStatus().then((res)=>{
+      if (res){setUntisStatus('Online')}else{setUntisStatus('Offline')}
+    })
   }, []);
 
 
@@ -71,18 +74,18 @@ export default function HomeScreen( {navigation} ) {
       <View style={styles.top}>
         <View style={styles.headding}>
           <Text style={{fontSize:25}}>{Greeting}</Text>
-          <Image style={styles.smallIcon} source={require('./assets/placeholder.jpeg')}/>
+          <Image style={styles.smallIcon} source={require('./assets/untis.png')}/>
         </View>
         <Text style={{fontSize:20, marginTop:8}}>{Time}</Text>
         <View style={styles.menubar}>
-        <TouchableOpacity onPress={()=>{navigation.navigate('Settings')}}><Image style={styles.smallIcon} source={require('./assets/placeholder.jpeg')}/></TouchableOpacity>
-        <TouchableOpacity onPress={()=>{navigation.navigate('Timetable')}}><Image style={styles.smallIcon} source={require('./assets/placeholder.jpeg')}/></TouchableOpacity>
+        <TouchableOpacity onPress={()=>{navigation.navigate('Settings')}}><Image style={styles.smallIcon} source={require('./assets/gear_icon.png')}/></TouchableOpacity>
+        <TouchableOpacity onPress={()=>{navigation.navigate('Timetable')}}><Image style={styles.smallIcon} source={require('./assets/calendar_icon.png')}/></TouchableOpacity>
       </View>
       </View>
       <ScrollView refreshControl={ <RefreshControl refreshing={refreshing} onRefresh={fetchdata} /> }>
       <View style={styles.body}>
       <View style={styles.frame}>
-          <Changes/>
+          <Changes resfresh={refreshing}/>
       </View>
 
       <View style={styles.frame}>
@@ -91,7 +94,7 @@ export default function HomeScreen( {navigation} ) {
 
       <View style={styles.frame}>
         <Text style={{fontSize:20,fontWeight:'bold'}}>Information</Text>
-        <View style={styles.part}><Text style={{fontSize:18}}>Server status:</Text><Text style={{color:'green',fontSize:16,fontWeight:'bold'}}>ONLINE</Text></View>
+        <View style={styles.part}><Text style={{fontSize:18}}>Server status:</Text><Text style={{color:'black',fontSize:16,fontWeight:'bold'}}>{untisStatus}</Text></View>
         <View style={styles.part}><Text style={{fontSize:18}}>Last update:</Text><Text style={{fontSize:16,fontWeight:'bold'}}>2 hours ago</Text></View>
         <View style={styles.part}><Text style={{fontSize:18}}>School role:</Text><Text style={{fontSize:16,fontWeight:'bold'}}>Student</Text></View>
       </View>

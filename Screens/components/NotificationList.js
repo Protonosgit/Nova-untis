@@ -13,7 +13,7 @@ const Notifications = ({props}) => {
             {items.map(() => {key++ ;return(
             <View key={key} style={styles.item}>
                 <Text style={styles.text1}>Title</Text>
-                <Text numberOfLines={1} style={styles.text2}>This fucking app is still broken and ssl encrypted</Text>
+                <Text numberOfLines={1} style={styles.text2}></Text>
                 </View>
             )})}
             { items.length>4?(

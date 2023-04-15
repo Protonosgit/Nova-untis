@@ -8,14 +8,14 @@ export default function TimetableScreen( {navigation} ) {
   const myEvents = [
     {
       id: 1,
-      description: 'Deutsch',
+      description: 'Test1',
       startDate: new Date(2023, 2, 9, 8, 0),
       endDate: new Date(2023, 2, 9, 9, 30),
       color: 'red',
     },
     {
       id: 2,
-      description: 'Mathematik',
+      description: 'Test2',
       startDate: new Date(2023, 2, 9, 9, 15),
       endDate: new Date(2023, 2, 9, 11, 15),
       color: 'green',

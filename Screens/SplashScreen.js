@@ -10,6 +10,7 @@ export default function SplashScreen({ navigation }) {
 
   const {ActiveUser,setActiveUser} = useContext(ContextStore);
 
+  //Key value sys
   function getKey(key) {
     return SecureStore.getItemAsync(key)
     .catch((error) => {
@@ -17,6 +18,7 @@ export default function SplashScreen({ navigation }) {
       });
   }
 
+  //Check if logged in
   function checkusers() {
     database.getUserAccounts().then((count) => {
       if (count.rows._array.length == 0) {
@@ -37,7 +39,7 @@ export default function SplashScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <Image source={require('./assets/untis.png')} />
+      <Image style={{width: 200,height:200}} source={require('./assets/untis.png')} />
       <Text style={styles.headding}>Project-Nova-Untis</Text>
       <Text style={{fontSize:20}}>[Active development ALPHA 0.0.1]</Text>
       <StatusBar hidden />

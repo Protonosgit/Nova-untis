@@ -42,7 +42,7 @@ const SchoolSearch2 = ({btsref}) => {
         <View style={styles.frame}>
         <Text style={styles.title}>Search for your school</Text>
         <View style={styles.searchbar}>
-            <Image source={require('../../assets/placeholder.jpeg')} style={{width: 20, height: 20, marginLeft: 10}}/>
+            <Image source={require('../../assets/search_icon.png')} style={{width: 20, height: 20, marginLeft: 10}}/>
             <TextInput style={{marginLeft: 15, width:'90%'}} onChangeText={(text)=>{ if (text.length>2) {if(text.length>40){setsearchres('Too much input')}else{searchterm(text)}}}} placeholder='Schoolname'/>
         </View>
             <BottomSheetScrollView>

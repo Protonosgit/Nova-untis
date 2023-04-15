@@ -1,30 +1,34 @@
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Button } from 'react-native';
+import React, { useState, useEffect, useContext } from 'react';
 
 import * as database from'./DatabaseHandler';
+import { ContextStore } from './ContextStore';
 
-var items = [];
-
-let key = 0;
-
-
-database.readData().then(data => {
- 	const array = data.rows._array
-    array.forEach(element => {
-        if (element.code==='cancelled' || element.substText ) {
-            items.push(element)
-        }
-    });
-});
 
 const Changes = ({props}) => {
 
-    return(
-        <View style={styles.frame}>
-            <Text style={{fontSize:20,fontWeight:'bold'}}>Timetable events ({items.length})</Text>
-            {items.slice(0,4).map((item) => {
-                let [start,end] = ''
+    const {UntisSession,setUntisSession} = useContext(ContextStore);
+    const [Items,setItems] = useState([]);
+    let key = 0;
 
+ useEffect(() => {
+    database.readData().then(data => {
+        const array = data.rows._array
+       let addlist = []
+       array.forEach(element => {
+           if (element.code || element.substText ) {
+               addlist.push(element)
+           }
+       });
+       setItems(addlist);
+   });
+ },[UntisSession])
+
+    return(
+        <View test={UntisSession} style={styles.frame}>
+            <Text style={{fontSize:20,fontWeight:'bold'}}>Timetable events ({Items.length})</Text>
+            {Items.slice(0,4).map((item) => {
+                let [start,end] = ''
                 key++ ;
                 return(
                     <View key={key} style={styles.item}>
@@ -34,10 +38,13 @@ const Changes = ({props}) => {
                         <Text style={styles.text3}>{start+' - '+end}</Text>
                         </View>
                 )})}
-                    { items.length>4?(
+                    { Items.length>4?(
                         <TouchableOpacity onPress={() => {alert('Feature missing!')}}>
                         <Text style={{textDecorationLine: 'underline',fontSize:15,width:'100%',textAlign:'center',padding:6,marginTop:10}}>Show more</Text>
                         </TouchableOpacity>
+                    ):null}
+                    { Items.length<1?(
+                        <Text style={{fontSize:18,opacity:0.6,width:'100%',textAlign:'center',padding:6,marginTop:10}}>Currently no changes listed</Text>
                     ):null}
 
         </View>

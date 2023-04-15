@@ -12,6 +12,7 @@ import { AccountPicker } from './components/dialogs/AccountPicker';
 import * as database from './components/DatabaseHandler';
 import { ContextStore } from './components/ContextStore';
 import * as untis from './components/UntisApi';
+import { ButtonSwitch, Element1 } from './components/Elements'
 
 export default function SettingsScreen( {navigation} ) {
 
@@ -71,6 +72,7 @@ export default function SettingsScreen( {navigation} ) {
   }
 
 
+  //reset data
   function killdata() {
     database.purge();
     setTimeout(() =>{
@@ -86,7 +88,7 @@ export default function SettingsScreen( {navigation} ) {
     <GestureHandlerRootView style={{flex: 1}}>
     <BottomSheetModalProvider>
     <SafeAreaView style={styles.container}>
-      <Button title='Test read rows' onPress={()=>{database.testread().then((res)=>{console.log(res.rows._array)})}}/>
+      <Button title='Test read rows' onPress={()=>{untis.getStatus().then((res)=>{console.log(res)})}}/>
         <View style={styles.headding}>
         <Image style={styles.smallIcon} source={require('./assets/untis.png')}/>
           <Text style={styles.head1}>Nova Untis</Text>
@@ -99,12 +101,12 @@ export default function SettingsScreen( {navigation} ) {
           <Image style={{height:60,width:60}} source={require('./assets/placeholder.jpeg')}/>
               <Text style={[styles.head3, {marginLeft:10,}]}>{unametxt}</Text>
               <TouchableOpacity onPress={handleBottomSheet}>
-              <Image style={{height:30,width:30,marginLeft:10,}} source={require('./assets/placeholder.jpeg')}/>
+              <Image style={{height:30,width:30,marginLeft:10,}} source={require('./assets/changeuser_icon.png')}/>
               </TouchableOpacity>
         </View>
         <TouchableWithoutFeedback onPress={()=>{navigation.replace('Login')}}>
         <View style={styles.inset1}>
-          <Image style={{height:40,width:40,marginLeft:30,}} source={require('./assets/placeholder.jpeg')}/>
+          <Image style={{height:40,width:40,marginLeft:30,}} source={require('./assets/adduser_icon.png')}/>
           <Text style={{fontSize:20,marginLeft:10,}}>Add user</Text>
         </View>
         </TouchableWithoutFeedback>
@@ -112,9 +114,7 @@ export default function SettingsScreen( {navigation} ) {
 
       <View style={styles.panel}>
         <Text style={styles.head3}>Apperance:</Text>
-        <Switch value={switch1} onValueChange={() => {setswitch1(!switch1)}}/>
-        <Switch value={switch1} onValueChange={() => {setswitch1(!switch1)}}/>
-        <Switch value={switch1} onValueChange={() => {setswitch1(!switch1)}}/>
+        <ButtonSwitch text='Hallo freund' />
       </View>
 
       <View style={styles.panel}>
@@ -139,6 +139,7 @@ export default function SettingsScreen( {navigation} ) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#fff'
   },
   top: {
     width: '100%',
@@ -177,7 +178,7 @@ const styles = StyleSheet.create({
     width: '90%',
     margin: 50,
     borderRadius: 20,
-    backgroundColor: 'lightgray'
+    backgroundColor: 'lightgray',
   },
   inset1: {
     padding: 10,

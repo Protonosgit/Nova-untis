@@ -38,6 +38,15 @@ function initialLogin(usrname, usrpass, server, loginName) {
     };
     return fetch('https://'+server+'/WebUntis/jsonrpc.do?school='+loginName,requestOptions).then(res=>res.json())
 }
+// Signin user as anon 😷
+function anonLogin(server, loginName) {
+    const requestOptions = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: "req0",jsonrpc: "2.0",method: "getAppSharedSecret",client: "NovaUntis" ,params: [{userName: "#anonymous#"}] })
+    };
+    return fetch('https://'+server+'/WebUntis/jsonrpc_intern.do?school='+loginName,requestOptions).then(res=>res.json())
+}
 // Followup calls to update jsessionid
 async function login(usrname,usrpass) {
     const host = await servHost(0);
@@ -207,6 +216,31 @@ async function lastupdate() {
     };
     fetch(host ,requestOptions).then(res=>res.json().then(res=>res.result).then((res)=>{database.test(res).then()}))
 }
+async function getStatus() {
+    const uacc = await database.getAccountInfo();
+    const codename = uacc.server.replace('.webuntis.com','')
+    const requestOptions = {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+    };
+
+    let status;
+    await fetch('https://status.webuntis.com/api/getMonitorList/mymoZf5g22' ,requestOptions)
+        .then(res => res.json().then(res => res.psp.monitors)
+            .then((res) => {
+                res.forEach(item => {
+                    if (item.name.toLowerCase() === codename) {
+                        if(item.statusClass === 'success') {
+                            status = true;
+                        } else { 
+                            status = false;
+                        }
+                    }
+                });
+            }));
+    return status;
+}
+
 // Fetch timetable data from untis
 async function timetable() {
     const timestamp = moment();
@@ -233,4 +267,4 @@ async function timetableV2() {
 }
 //data fetching end--
 
-export { initialLogin, login, logout, untisSchoolQuery, initConfigChain, fetchdata, getToken };
+export { initialLogin, login,anonLogin, logout, untisSchoolQuery, initConfigChain, fetchdata, getToken, getStatus };
