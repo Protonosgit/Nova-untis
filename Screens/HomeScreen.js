@@ -1,57 +1,105 @@
 import { StatusBar } from 'expo-status-bar';
 import * as SecureStore from 'expo-secure-store';
-import { Button, StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
+import { Button, StyleSheet, Text, View, Image, TouchableOpacity, ScrollView, RefreshControl } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Changes } from './components/ChangeList';
 import { Notifications } from './components/NotificationList';
+import { useState, useEffect, useContext } from 'react';
+import moment from 'moment'; 
+import { refresh } from '@react-native-community/netinfo';
+import * as untis from './components/UntisApi';
+import * as database from './components/DatabaseHandler';
+import { ContextStore } from './components/ContextStore';
 
 
 export default function HomeScreen( {navigation} ) {
 
-  async function save() {
-    await SecureStore.setItemAsync('user','false');
+  const [Time,setTime] = useState('Today is Friday 13th');
+  const [Greeting,setGreeting] = useState('Good day sir ')
+  const [refreshing, setRefreshing] = useState(false);
+  const [untisStatus, setUntisStatus] = useState('Checking...');
+  const {UntisSession,setUntisSession} = useContext(ContextStore);
+
+  // key value sys
+  function setKey(key, value) {
+    return SecureStore.setItemAsync(key, value)
+      .catch((error) => {
+        console.error(`Error saving item with key: ${key}`, error);
+      });
   }
-  async function getKey() {
-    let result = await SecureStore.getItemAsync('uname');
-    if (result) {
-      console.log(result);
-    } else {
-      console.log('err')
-    }
+  async function getKey(key) {
+    return SecureStore.getItemAsync(key)
   }
 
-  function gotoSettings() {
-    navigation.navigate('Settings');
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setTime('Today is '+moment().format('dddd DD MMMM YYYY'));
+      const hour = parseInt(moment().format('HH'));
+      if (hour>=18){
+        setGreeting('Good evening!')
+      }else if (hour>=15){
+        setGreeting('Good afternoon!')
+      }else if (hour>=12){
+        setGreeting('Good midday!')
+      }else if (hour>=0){
+        setGreeting('Good morning!')
+      }
+    }, 1000);
+
+    untis.getStatus().then((res)=>{
+      if (res){setUntisStatus('Online')}else{setUntisStatus('Offline')}
+    })
+  }, []);
+
+
+  async function fetchdata() {
+    if (true) {
+      setRefreshing(true)
+      const uname = await getKey('ActiveUname');
+      const upw = await getKey('ActivePass');
+      untis.login(uname,upw).then(res => {
+        const sess = res.result;
+        setKey('UntisUser',JSON.stringify(res.result));
+        setUntisSession(res.result);
+        database.resetConfig().then(()=>{
+          untis.initConfigChain(sess);
+          setTimeout(() => {setRefreshing(false)}, 2000);
+        });
+      });
+    } else {showToast('error','No Internet Connection')}
   }
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.top}>
         <View style={styles.headding}>
-          <Text style={styles.head1}>Good morning Kay Julius Donatus</Text>
-          <Image style={styles.smallIcon} source={require('./assets/placeholder.jpeg')}/>
+          <Text style={{fontSize:25}}>{Greeting}</Text>
+          <Image style={styles.smallIcon} source={require('./assets/untis.png')}/>
         </View>
-        <Text style={styles.head2}>Today is Friday 13. of december</Text>
-        <TouchableOpacity onPress={gotoSettings}><Image style={styles.smallIcon} source={require('./assets/placeholder.jpeg')}/></TouchableOpacity>
+        <Text style={{fontSize:20, marginTop:8}}>{Time}</Text>
+        <View style={styles.menubar}>
+        <TouchableOpacity onPress={()=>{navigation.navigate('Settings')}}><Image style={styles.smallIcon} source={require('./assets/gear_icon.png')}/></TouchableOpacity>
+        <TouchableOpacity onPress={()=>{navigation.navigate('Timetable')}}><Image style={styles.smallIcon} source={require('./assets/calendar_icon.png')}/></TouchableOpacity>
       </View>
-
+      </View>
+      <ScrollView refreshControl={ <RefreshControl refreshing={refreshing} onRefresh={fetchdata} /> }>
       <View style={styles.body}>
-        
-      <View style={styles.eventpanel}>
-        <Text style={styles.head3}>Timetable events</Text>
-        <View style={styles.lister}>
-          <Changes/>
-        </View>
+      <View style={styles.frame}>
+          <Changes resfresh={refreshing}/>
       </View>
 
-      <View style={styles.notipanel}>
-        <Text style={styles.head3}>Notifications</Text>
-        <View style={styles.lister}>
+      <View style={styles.frame}>
           <Notifications/>
-        </View>
       </View>
 
+      <View style={styles.frame}>
+        <Text style={{fontSize:20,fontWeight:'bold'}}>Information</Text>
+        <View style={styles.part}><Text style={{fontSize:18}}>Server status:</Text><Text style={{color:'black',fontSize:16,fontWeight:'bold'}}>{untisStatus}</Text></View>
+        <View style={styles.part}><Text style={{fontSize:18}}>Last update:</Text><Text style={{fontSize:16,fontWeight:'bold'}}>2 hours ago</Text></View>
+        <View style={styles.part}><Text style={{fontSize:18}}>School role:</Text><Text style={{fontSize:16,fontWeight:'bold'}}>Student</Text></View>
       </View>
+      </View>
+      </ScrollView>
       <StatusBar style="auto" />
     </SafeAreaView>
   );
@@ -60,59 +108,49 @@ export default function HomeScreen( {navigation} ) {
 
 const styles = StyleSheet.create({
   container: {
+    backgroundColor: '#fff',
     flex: 1,
   },
   top: {
     width: '100%',
     backgroundColor: 'lightgray',
-    padding: 10,
+    padding: 20,
   },
   headding: {
     justifyContent: 'space-between',
     flexDirection:'row',
     alignItems:'center',
   },
+  menubar: {
+    flexDirection:'row',
+    justifyContent: 'space-between',
+    alignContent: 'center',
+    alignItems: 'center',
+    marginTop: 20,
+  },
   smallIcon: {
-    width: 80,
-    height: 80,
-  },
-  head1: {
-    fontSize: 25,
-  },
-  head2:{
-    fontSize: 20,
-  },
-  head3: {
-    width: '100%',
-    textAlign: 'center',
-    fontSize: 20,
-    fontWeight: 'bold',
+    width: 50,
+    height: 50,
   },
   body: {
     flex: 1,
+    height: '100%',
     backgroundColor: '#fff',
     alignItems: 'center',
   },
-  eventpanel:{
-    flex: 2,
-    padding: 10,
+    frame:{
     width: '90%',
-    margin: '5%',
-    borderRadius: 20,
+    padding: 8,
+    marginTop: 15,
+    borderRadius: 15,
     backgroundColor: 'lightgray'
   },
-    notipanel:{
-    flex: 1,
-    padding: 10,
-    width: '90%',
-    margin: '5%',
-    borderRadius: 20,
-    backgroundColor: 'lightgray'
-  },
-  lister: {
-    flex: 1,
-    justifyContent: 'center',
-    alignContent: 'center',
+  part: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-  },
+    marginTop: 4,
+    padding:4,
+    borderBottomWidth: 2,
+  }
 });

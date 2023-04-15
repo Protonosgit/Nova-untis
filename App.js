@@ -58,13 +58,3 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 });
-
-console.log('Active development do not share!');
-
-//Do not share until release!
-
-//Propperty of Team BlackNeutron [https://blackneutron.ml] 
-
-//This Pre-Release was made by Protonos [https://protonos.ml]
-
-//Networking written by Galyx

@@ -14,7 +14,6 @@ const SchoolSearch2 = ({btsref}) => {
     const {Schoolname,setSchoolname} = useContext(ContextStore);
     const {SchoolInfo,setSchoolInfo} = useContext(ContextStore);
 
-
     async function searchterm(term) {
         untisSchoolQuery(term).then((res)=>{
           if (res.result){
@@ -24,7 +23,7 @@ const SchoolSearch2 = ({btsref}) => {
             } else {setsearchres('No schools have been found!'); setschools([]);}
           } else{
             if (res.error.code===-6003) {
-            setsearchres('Too many results');
+            setsearchres('Too many results!');
             setschools([]);
             } else{ setsearchres('error while searching'); setschools([]);}
           }
@@ -34,7 +33,7 @@ const SchoolSearch2 = ({btsref}) => {
         setSchoolInfo(picked);
         setSchoolname(picked.loginName);
         Keyboard.dismiss();
-        btsref.current.close();
+        setTimeout((()=>{btsref.current.close();}),300)
       }
 
     
@@ -43,19 +42,26 @@ const SchoolSearch2 = ({btsref}) => {
         <View style={styles.frame}>
         <Text style={styles.title}>Search for your school</Text>
         <View style={styles.searchbar}>
-            <TextInput onChangeText={(text)=>{ if (text.length>2) {searchterm(text)}}} style={{width: '90%'}} placeholder='Schoolname'/>
-            <Image source={require('../../assets/placeholder.jpeg')} style={{width: 20, height: 20, marginLeft: 10}}/>
+            <Image source={require('../../assets/search_icon.png')} style={{width: 20, height: 20, marginLeft: 10}}/>
+            <TextInput style={{marginLeft: 15, width:'90%'}} onChangeText={(text)=>{ if (text.length>2) {if(text.length>40){setsearchres('Too much input')}else{searchterm(text)}}}} placeholder='Schoolname'/>
         </View>
-        <Text style={styles.searchres}>{searchres}</Text>
             <BottomSheetScrollView>
+            {
+          searchres?(
+            <View style={styles.searchres}><Text style={{color:'gray',fontSize:20}}>{searchres}</Text></View>
+          ):(
+            <View style={{marginTop:20}}>
             {schools.map(item=>(
             <View key={item.schoolId} style={styles.items}>
                 <TouchableOpacity onPress={()=>{schoolpick(item)}}>
-                <Text style={styles.schoolname} >{item.displayName}</Text>
-                <Text >{item.address}</Text>
+                <Text style={{fontSize:18}} >{item.displayName}</Text>
+                <Text>{item.address}</Text>
                 </TouchableOpacity>
                 </View>
                 ))}
+                </View>
+          )
+        }
             </BottomSheetScrollView>
         </View>
      </BottomSheetModal>
@@ -72,25 +78,25 @@ const styles = StyleSheet.create({
         padding: 8,
     },
     title: {
-        marginBottom: '8%',
+        marginBottom: '4%',
         fontSize: 18,
         textAlign: 'center',
         fontWeight: 'bold',
     },
     searchbar: {
         display : 'flex',
-        justifyContent: 'space-between',
-        flexDirection:'row',
+        flexDirection: 'row',
         alignItems:'center',
-        flexWrap: 'wrap',
         backgroundColor: 'gray',
         padding: 8,
         borderRadius: 30,
     },
     searchres: {
-        color: 'tomato',
-        fontSize: 16,
-        fontWeight: 'bold',
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: 8,
+      marginTop: 12,
     },
     items: {
         padding: 6,
@@ -98,12 +104,6 @@ const styles = StyleSheet.create({
         backgroundColor: 'gray',
         borderRadius: 4,
     },
-    results: {
-        marginTop: 20,
-    },
-    schoolname: {
-        fontSize: 18,
-    }
 
 })
 

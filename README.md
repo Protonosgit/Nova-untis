@@ -3,13 +3,20 @@
 <img src="/assets/icon.png" alt="drawing" width="250"/>
 
 ## Another Untis client for Android / IOS
-Once done this project will offer a better user experience for untis users!
 
-### Fatures include:
+I was aiming for a hub based design with notifications and customization support
 
-- [X] New hub based design
+## Future of this project:
+
+Im currently not interested in this project anymore.
+If you would like to continue this project feel free to ask me!
+
+### Fatures (I planned to) include:
+
+- [x] New hub based design
 - [ ] Notifications
 - [ ] Multiple data sources / apis
 - [ ] Active event tracker
-- [ ] Better timetable design
-- [X] Simple multi user management
+- [ ] Better timetable design (buttomsheet etc.)
+- [x] Simple multi user management
+- [ ] Add own events and homework to timetable
